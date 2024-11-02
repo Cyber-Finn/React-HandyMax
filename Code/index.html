@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HandyMax</title>
+  <script src="https://unpkg.com/react@17/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@17/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="header">HandyMax Services</div>
+  <div id="content"></div>
+  <div class="footer">
+    &copy; 2024 Stephen Oosthuizen. All rights reserved. &reg;
+  </div>
+  <script type="text/babel">
+    function ServiceCard({ service, onClick }) {
+      return (
+        <div className="card" onClick={() => onClick(service)}>
+          <img src={service.s_image_path} alt={service.s_name} />
+          <div className="card-content">
+            <h2>{service.s_name}</h2>
+            <p>{service.s_description}</p>
+          </div>
+        </div>
+      );
+    }
+    function Modal({ service, onClose }) {
+      console.log('Modal service data:', service); // Log service data in Modal
+
+      // Initial state setup
+      const [formData, setFormData] = React.useState({
+        name: '',
+        phone: '',
+        s_link: '',
+        service: '',
+        date: ''
+      });
+
+      // Ensure formData is updated when service changes
+      React.useEffect(() => {
+        setFormData({
+          name: '',
+          phone: '',
+          s_link: service.s_link, // Ensure s_link is included
+          service: service.s_name,
+          date: ''
+        });
+      }, [service]);
+
+      const [statusMessage, setStatusMessage] = React.useState('');
+
+      const handleChange = (e) => {
+        setFormData({
+          ...formData,
+          [e.target.name]: e.target.value
+        });
+      };
+
+      const handleSubmit = (e) => {
+        e.preventDefault();
+        const formDataEncoded = new URLSearchParams(formData).toString(); // Encode form data
+        fetch('book_appointment.php', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: formDataEncoded,
+        })
+          .then(response => response.json())
+          .then(data => {
+            if (data.message === 'Appointment successfully booked') {
+              setStatusMessage('Appointment successfully booked');
+              setTimeout(() => {
+                setStatusMessage('');
+                onClose();
+              }, 2000);
+            } else {
+              setStatusMessage(data.message);
+            }
+          })
+          .catch(error => {
+            setStatusMessage('An error occurred. Please try again.');
+            console.error('Error:', error); // Log any error to the console
+          });
+      };
+
+      return (
+        <div className="modal">
+          <div className="modal-content">
+            <span className="close-button" onClick={onClose}>&times;</span>
+            <h2>Book an Appointment</h2>
+            <form onSubmit={handleSubmit}>
+              <label>
+                Name:
+                <input type="text" name="name" value={formData.name} onChange={handleChange} />
+              </label>
+              <br />
+              <label>
+                Phone:
+                <input type="text" name="phone" value={formData.phone} onChange={handleChange} />
+              </label>
+              <br />
+              <label>
+                Service Needed:
+                <input type="text" name="service" value={formData.service} readOnly />
+              </label>
+              <br />
+              <label>
+                Preferred Date:
+                <input type="date" name="date" value={formData.date} onChange={handleChange} />
+              </label>
+              <br />
+              <button type="submit">Submit</button>
+            </form>
+            {statusMessage && <p className={`status-message ${statusMessage === 'Appointment successfully booked' ? 'success' : ''}`}>{statusMessage}</p>}
+          </div>
+        </div>
+      );
+    }
+
+
+    function App() {
+      const [services, setServices] = React.useState([]);
+      const [selectedService, setSelectedService] = React.useState(null);
+
+      React.useEffect(() => {
+        fetch('get_services.php')
+          .then(response => response.json())
+          .then(data => {
+            console.log('Fetched data:', data); // Log the fetched data
+            setServices(data);
+          })
+          .catch(error => console.error('Error fetching services:', error));
+      }, []);
+
+      const handleServiceClick = (service) => {
+        console.log('Selected service:', service); // Log selected service
+        setSelectedService(service);
+      };
+
+      const handleCloseModal = () => {
+        setSelectedService(null);
+      };
+
+      return (
+        <div>
+          <div className="card-container">
+            {services.map((service, index) => (
+              <ServiceCard key={index} service={service} onClick={handleServiceClick} />
+            ))}
+          </div>
+          {selectedService && <Modal service={selectedService} onClose={handleCloseModal} />}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('content'));
+
+  </script>
+</body>
+</html>

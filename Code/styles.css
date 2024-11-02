@@ -1,0 +1,104 @@
+/* Service cards display */
+.card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.card {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 20px;
+  text-align: center;
+  cursor: pointer;
+  width: 100%;
+  max-width: 500px; /* Keeps the cards from getting too wide */
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.card img {
+  width: 100%;
+  height: auto;
+  max-height: 300px; /* Ensures images don't exceed a certain height */
+  object-fit: cover;
+}
+
+/* App content text */
+body {
+  font-family: Arial, sans-serif;
+}
+
+/* header */
+#header {
+  position: fixed;
+  width: 100%;
+  top: 0; /*ensure header starts from very top*/
+  left:0; /*ensure header starts from very left*/
+  background-color: #0554a3; /* Navy Blue */
+  color: white;
+  text-align: center;
+  font-size: large;
+  font-family: Arial, Helvetica, sans-serif;
+  padding: 20px;
+  box-shadow: 0 4px 2px -2px gray;
+  z-index: 1000;
+}
+
+/* Just to make sure that our cards dont appear under the header ribbon */
+#content {
+  padding-top: 5%;
+}
+
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 1%;
+  background-color: #f1f1f1; /* Light grey background */
+  color: #333; /* Dark grey text */
+  border-top: 1px solid #ddd; /* Subtle border at the top */
+  position: relative;
+  bottom: 0;
+  width: 100%;
+}
+
+
+/* input form */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal-content {
+  background: white;
+  padding: 20px;
+  border-radius: 5px;
+  width: 80%;
+  max-width: 500px;
+  position: relative;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.status-message {
+  margin-top: 10px;
+  color: red;
+}
+
+.status-message.success {
+  color: green;
+}

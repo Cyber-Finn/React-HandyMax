@@ -1,0 +1,30 @@
+This is a list of scripts for the database-side of this system.
+Note: These should only be done once, to set up the initial infrastructure.
+
+Please ensure that you run these, in numberical order, within MySQL:
+1. Create Database HandyMax;
+2. Use HandyMax;
+3. create table Services(
+    s_link int unique not null auto_increment,
+    s_name varchar(30) not null unique,
+    s_description varchar(100) not null unique,
+    s_image_path varchar(255) not null unique,
+    Primary Key (s_link)
+);
+4. Create table Appointments (
+    a_link int unique not null auto_increment,
+    s_link int not null,
+    a_name varchar(30) not null,
+    a_phone varchar(30) not null,
+    a_date date not null,
+    Primary key (a_link, a_name),
+    Foreign key (s_link) references Services(s_link)
+);
+5. adding our services
+    5.1. Insert into Services(s_name, s_description, s_image_path) values ('Plumbing', 'Quality plumbing services', './Images/plumbing.jfif');
+    5.2. Insert into Services(s_name, s_description, s_image_path) values ('Electrical', 'Safe electrical work', './Images/electrical.jfif');
+    5.3. Insert into Services(s_name, s_description, s_image_path) values ('Carpentry', 'Expert carpentry', './Images/carpentry.jfif');
+
+6. Query to check if appointments are working:
+    select s.s_name, a.a_name, a.a_phone, a.a_date from Appointments as a
+        left join Services as s on s.s_link = a.s_link
