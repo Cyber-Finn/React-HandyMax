@@ -1,16 +1,7 @@
 <?php
     require_once("connection_details.php");
     header('Content-Type: application/json');
-
-    // Enable error reporting for debugging
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-
-    // Database connection details
-    $dsn = "mysql:host=localhost;dbname=HandyMax";
-    $username = "root";
-    $password = "mysql";
-
+    
     try {
         $conn = new PDO($dsn, $username, $password);
         $conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);

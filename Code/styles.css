@@ -1,10 +1,10 @@
-/* Service cards display */
+/* Service cards display in vertical format */
 .card-container {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
-.card {
+.card, .booking-card {
   border: 1px solid #ddd;
   border-radius: 5px;
   padding: 20px;
@@ -21,7 +21,7 @@
 .card img {
   width: 100%;
   height: auto;
-  max-height: 300px; /* Ensures images don't exceed a certain height */
+  max-height: 300px; /* Ensure images don't exceed a certain height */
   object-fit: cover;
 }
 
@@ -39,7 +39,7 @@ body {
   background-color: #0554a3; /* Navy Blue */
   color: white;
   text-align: center;
-  font-size: large;
+  font-size: xx-large;
   font-family: Arial, Helvetica, sans-serif;
   padding: 20px;
   box-shadow: 0 4px 2px -2px gray;
@@ -101,4 +101,13 @@ body {
 
 .status-message.success {
   color: green;
+}
+
+/* the "admin" View bookings button */
+#header button {
+  float: right;
+  padding-right: 2%;
+}
+.booking-card, .booking-card-content {
+  background: #d5e8fa;
 }

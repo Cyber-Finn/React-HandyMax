@@ -17,6 +17,7 @@ Please ensure that you run these, in numberical order, within MySQL:
     a_name varchar(30) not null,
     a_phone varchar(30) not null,
     a_date date not null,
+    a_complete boolean not null default false,
     Primary key (a_link, a_name),
     Foreign key (s_link) references Services(s_link)
 );
@@ -26,5 +27,6 @@ Please ensure that you run these, in numberical order, within MySQL:
     5.3. Insert into Services(s_name, s_description, s_image_path) values ('Carpentry', 'Expert carpentry', './Images/carpentry.jfif');
 
 6. Query to check if appointments are working:
-    select s.s_name, a.a_name, a.a_phone, a.a_date from Appointments as a
-        left join Services as s on s.s_link = a.s_link
+    select s.s_name as Service, a.a_name as Customer, a.a_phone as Phone, a.a_date as "Date" from Appointments as a
+	left join Services as s on s.s_link = a.s_link
+	where a.a_complete = false
