@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,6 +18,7 @@
     &copy; 2024 Stephen Oosthuizen. All rights reserved. &reg;
   </div>
   <script type="text/babel">
+    // Component to render a service card with clickable functionality
     function ServiceCard({ service, onClick }) {
       return (
         <div className="card" onClick={() => onClick(service)}>
@@ -30,7 +30,8 @@
         </div>
       );
     }
-
+    
+    // Component to render a booking card with a complete button
     function BookingCard({ booking, onCompleteClick }) {
       return (
         <div className="booking-card">
@@ -44,8 +45,9 @@
         </div>
       );
     }
-
+    // Component to render a modal/window/dialog-window for booking an appointment
     function Modal({ service, onClose }) {
+      //state to manage form data
       const [formData, setFormData] = React.useState({
         name: '',
         phone: '',
@@ -55,6 +57,8 @@
       });
       const [statusMessage, setStatusMessage] = React.useState('');
 
+      //use an effect to update the service and service_link when a card is clicked -> this lets us auto-fill the service field with the service they selected
+      //  if also lets us keep track of which service they've selected, which we'll need for the DB insert
       React.useEffect(() => {
         setFormData({
           name: '',
@@ -65,13 +69,15 @@
         });
       }, [service]);
 
+      //handle input and update the Appointment form's state 
       const handleChange = (e) => {
         setFormData({
           ...formData,
           [e.target.name]: e.target.value
         });
       };
-
+      //Send all form data to the PHP - this data is checked for sql/html injection on both client side and server side.
+      //  this also displays a status message, saying if it was successful in booking the appointment, or detailing the problem
       const handleSubmit = (e) => {
         e.preventDefault();
         const formDataEncoded = new URLSearchParams(formData).toString();
@@ -100,6 +106,7 @@
           });
       };
 
+      //this defines what the "book an appointment" form looks like, and defines which method to call on submission, etc.
       return (
         <div className="modal">
           <div className="modal-content">
@@ -128,12 +135,13 @@
               <br />
               <button type="submit">Submit</button>
             </form>
+            {/*This is what actually renders our status message. The way this works is that when we've set the statusMessage to anything NOT null, the expression evaluates to true, which then makes the value of statusMessage display/render*/}
             {statusMessage && <p className={`status-message ${statusMessage === 'Appointment successfully booked' ? 'success' : ''}`}>{statusMessage}</p>}
           </div>
         </div>
       );
     }
-
+    //this component is for the "Admin" page. It just defines what each of the already-booked Appointment cards will look like
     function CompleteModal({ booking, onClose, onComplete }) {
         const handleComplete = () => {
           const formDataEncoded = new URLSearchParams({ a_link: booking.a_link }).toString();
@@ -156,19 +164,22 @@
               console.error('Error:', error);
             });
           };
+        //similar to the "book an appointment" form
+        //  this defines what the Appointment/bookings cards of the "View Bookings" form looks like, and defines which method to call when a booking is marked as complete
         return (
           <div className="modal">
             <div className="modal-content">
               <span className="close-button" onClick={onClose}>&times;</span>
               <h2>Complete Appointment</h2>
-              <p>Are you sure you want to mark this appointment as completed?</p>
+              <p>Mark this appointment as complete?</p>
               <button onClick={handleComplete}>Yes</button>
               <button onClick={onClose}>No</button>
             </div>
           </div>
       );
     }
-
+    //this is the main brain of our app.
+    //  this component manages all other components and states
     function App() {
       const [services, setServices] = React.useState([]);
       const [selectedService, setSelectedService] = React.useState(null);
@@ -176,6 +187,7 @@
       const [viewBookings, setViewBookings] = React.useState(false);
       const [selectedBooking, setSelectedBooking] = React.useState(null);
 
+      //onload/refresh, get all our services from the database
       React.useEffect(() => {
         fetch('get_services.php')
           .then(response => response.json())
@@ -201,27 +213,27 @@
         setSelectedBooking(null);
         fetchBookings();
       };
-
+      //this is for the "admin" page again. This displays all the previously booked appointments that are still in todo state
       const fetchBookings = () => {
         fetch('get_bookings.php')
           .then(response => response.json())
           .then(data => {
             setBookings(data);
             setViewBookings(true);
-            document.getElementById('view-bookings').innerText = 'View Services';
+            document.getElementById('view-bookings').innerText = 'View Services'; //change the text of the button (check the comment for "toggleView")
           })
           .catch(error => console.error('Error fetching bookings:', error));
       };
-
+      //this is also for the "admin" page. This changes the text and view when you click the button in the header, based on which page you're currently on
       const toggleView = () => {
         if (viewBookings) {
           setViewBookings(false); // Switch to service cards view
-          document.getElementById('view-bookings').innerText = 'View Bookings';
+          document.getElementById('view-bookings').innerText = 'View Bookings'; //change the text of the button
         } else {
           fetchBookings(); // Fetch and display bookings
         }
       };
-
+      // Set up an event listener for the "view bookings" button
       React.useEffect(() => {
         const viewBookingsButton = document.getElementById('view-bookings');
         if (viewBookingsButton) {
@@ -234,15 +246,17 @@
           }
         };
       }, [viewBookings]);
-
+      //this defines what the actual "App" will look like. As we can see, it contains all the other components within it
       return (
         <div>
           <div className="card-container">
+            {/*If we're not on the "view bookings" admin page, then display the services-*/}
             {!viewBookings ? (
               services.map((service, index) => (
                 <ServiceCard key={index} service={service} onClick={handleServiceClick} />
               )) 
             ) : (
+              //if we're on the "View bookings" admin page, AND there are bookings, show them. Else display "No bookings yet"
               bookings.length > 0 ? (
                 bookings.map((booking, index) => (
                   <BookingCard key={index} booking={booking} onCompleteClick={handleCompleteClick} />
@@ -251,12 +265,16 @@
                 <p>No bookings yet</p>
               )
             )}
-          </div>    
+          </div>
+          {/*These are what actually render our Modals/Views/windows/etc. The way this works is that when we've set the selectedSomething to true in the code above, the expression evaluates to true, which then makes these call those components and pass in the values we've given, and forces them to use the methods we've defined*/}
           {selectedService && <Modal service={selectedService} onClose={handleCloseModal} />}
           {selectedBooking && <CompleteModal booking={selectedBooking} onClose={handleCloseCompleteModal} onComplete={handleCloseCompleteModal} />}
         </div>
       );
     }
+    //this is the part of the code that actually displays the app and all the internal components that comprise it
+    //  we could turn this into its own onRender function, etc., but this is simple and concise enough for the current use-case
+    //    we simply pass in the component we want to render, and the HTML element we'd like to essentially "replace" with the component
     ReactDOM.render(<App />, document.getElementById('content'));
   </script>
 </body>

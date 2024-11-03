@@ -1,7 +1,7 @@
 This is a list of scripts for the database-side of this system.
 Note: These should only be done once, to set up the initial infrastructure.
 
-Please ensure that you run these, in numberical order, within MySQL:
+Please ensure that you run these, in numerical order, within MySQL:
 1. Create Database HandyMax;
 2. Use HandyMax;
 3. create table Services(
