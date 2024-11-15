@@ -15,7 +15,7 @@
   </div>
   <div id="content"></div>
   <div class="footer">
-    &copy; 2024 Stephen Oosthuizen. All rights reserved. &reg;
+    &copy; 2024 Stephen. All rights reserved. &reg;
   </div>
   <script type="text/babel">
     // Component to render a service card with clickable functionality
@@ -47,7 +47,7 @@
     }
     // Component to render a modal/window/dialog-window for booking an appointment
     function Modal({ service, onClose }) {
-      //state to manage form data
+      // State to manage form data
       const [formData, setFormData] = React.useState({
         name: '',
         phone: '',
@@ -57,8 +57,8 @@
       });
       const [statusMessage, setStatusMessage] = React.useState('');
 
-      //use an effect to update the service and service_link when a card is clicked -> this lets us auto-fill the service field with the service they selected
-      //  if also lets us keep track of which service they've selected, which we'll need for the DB insert
+      // Use an effect to update the service and service_link when a card is clicked -> this lets us auto-fill the service field with the service they selected
+      // It also lets us keep track of which service they've selected, which we'll need for the DB insert
       React.useEffect(() => {
         setFormData({
           name: '',
@@ -76,8 +76,8 @@
           [e.target.name]: e.target.value
         });
       };
-      //Send all form data to the PHP - this data is checked for sql/html injection on both client side and server side.
-      //  this also displays a status message, saying if it was successful in booking the appointment, or detailing the problem
+      // Send all form data to the PHP - this data is checked for sql/html injection on both client side and server side.
+      // This also displays a status message, saying if it was successful in booking the appointment, or detailing the problem
       const handleSubmit = (e) => {
         e.preventDefault();
         const formDataEncoded = new URLSearchParams(formData).toString();
@@ -106,7 +106,7 @@
           });
       };
 
-      //this defines what the "book an appointment" form looks like, and defines which method to call on submission, etc.
+      // This defines what the "book an appointment" form looks like, and defines which method to call on submission, etc.
       return (
         <div className="modal">
           <div className="modal-content">
@@ -135,13 +135,13 @@
               <br />
               <button type="submit">Submit</button>
             </form>
-            {/*This is what actually renders our status message. The way this works is that when we've set the statusMessage to anything NOT null, the expression evaluates to true, which then makes the value of statusMessage display/render*/}
+            {/* This is what actually renders our status message. The way this works is that when we've set the statusMessage to anything NOT null, the expression evaluates to true, which then makes the value of statusMessage display/render*/}
             {statusMessage && <p className={`status-message ${statusMessage === 'Appointment successfully booked' ? 'success' : ''}`}>{statusMessage}</p>}
           </div>
         </div>
       );
     }
-    //this component is for the "Admin" page. It just defines what each of the already-booked Appointment cards will look like
+    // This component is for the "Admin" page. It just defines what each of the already-booked Appointment cards will look like
     function CompleteModal({ booking, onClose, onComplete }) {
         const handleComplete = () => {
           const formDataEncoded = new URLSearchParams({ a_link: booking.a_link }).toString();
@@ -164,8 +164,8 @@
               console.error('Error:', error);
             });
           };
-        //similar to the "book an appointment" form
-        //  this defines what the Appointment/bookings cards of the "View Bookings" form looks like, and defines which method to call when a booking is marked as complete
+        // Similar to the "book an appointment" form
+        // This defines what the Appointment/bookings cards of the "View Bookings" form looks like, and defines which method to call when a booking is marked as complete
         return (
           <div className="modal">
             <div className="modal-content">
@@ -178,8 +178,8 @@
           </div>
       );
     }
-    //this is the main brain of our app.
-    //  this component manages all other components and states
+    // This is the main brain of our app.
+    // This component manages all other components and states
     function App() {
       const [services, setServices] = React.useState([]);
       const [selectedService, setSelectedService] = React.useState(null);
@@ -187,7 +187,7 @@
       const [viewBookings, setViewBookings] = React.useState(false);
       const [selectedBooking, setSelectedBooking] = React.useState(null);
 
-      //onload/refresh, get all our services from the database
+      // At Onload/Refresh, get all our services from the database to update the UI with the latest data
       React.useEffect(() => {
         fetch('get_services.php')
           .then(response => response.json())
@@ -213,7 +213,7 @@
         setSelectedBooking(null);
         fetchBookings();
       };
-      //this is for the "admin" page again. This displays all the previously booked appointments that are still in todo state
+      // This is for the "admin" page. This displays all the previously booked appointments that are still in todo state
       const fetchBookings = () => {
         fetch('get_bookings.php')
           .then(response => response.json())
@@ -224,7 +224,7 @@
           })
           .catch(error => console.error('Error fetching bookings:', error));
       };
-      //this is also for the "admin" page. This changes the text and view when you click the button in the header, based on which page you're currently on
+      // This is also for the "admin" page. This changes the text and view when you click the button in the header, based on which page you're currently on
       const toggleView = () => {
         if (viewBookings) {
           setViewBookings(false); // Switch to service cards view
@@ -246,17 +246,17 @@
           }
         };
       }, [viewBookings]);
-      //this defines what the actual "App" will look like. As we can see, it contains all the other components within it
+      // This defines what the actual "App" will look like. As we can see, it contains all the other components within it
       return (
         <div>
           <div className="card-container">
-            {/*If we're not on the "view bookings" admin page, then display the services-*/}
+            {/* If we're not on the "view bookings" admin page, then display the services*/}
             {!viewBookings ? (
               services.map((service, index) => (
                 <ServiceCard key={index} service={service} onClick={handleServiceClick} />
               )) 
             ) : (
-              //if we're on the "View bookings" admin page, AND there are bookings, show them. Else display "No bookings yet"
+              // If we're on the "View bookings" admin page, AND there are bookings, show them. Else display "No bookings yet"
               bookings.length > 0 ? (
                 bookings.map((booking, index) => (
                   <BookingCard key={index} booking={booking} onCompleteClick={handleCompleteClick} />
@@ -266,15 +266,15 @@
               )
             )}
           </div>
-          {/*These are what actually render our Modals/Views/windows/etc. The way this works is that when we've set the selectedSomething to true in the code above, the expression evaluates to true, which then makes these call those components and pass in the values we've given, and forces them to use the methods we've defined*/}
+          {/* These are what actually render our Modals/Views/windows/etc. The way this works is that when we've set the selectedSomething to true in the code above, the expression evaluates to true, which then makes these call those components and pass in the values we've given, and forces them to use the methods we've defined*/}
           {selectedService && <Modal service={selectedService} onClose={handleCloseModal} />}
           {selectedBooking && <CompleteModal booking={selectedBooking} onClose={handleCloseCompleteModal} onComplete={handleCloseCompleteModal} />}
         </div>
       );
     }
-    //this is the part of the code that actually displays the app and all the internal components that comprise it
-    //  we could turn this into its own onRender function, etc., but this is simple and concise enough for the current use-case
-    //    we simply pass in the component we want to render, and the HTML element we'd like to essentially "replace" with the component
+    // This is the part of the code that actually displays the app and all the internal components that comprise it.
+    // We could turn this into its own onRender function, etc., but this is simple and concise enough for the current use-case.
+    // We simply pass in the component we want to render, and the HTML element we'd like to essentially "replace" with the custom component we supply.
     ReactDOM.render(<App />, document.getElementById('content'));
   </script>
 </body>

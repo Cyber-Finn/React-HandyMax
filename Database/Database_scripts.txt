@@ -1,5 +1,5 @@
 This is a list of scripts for the database-side of this system.
-Note: These should only be done once, to set up the initial infrastructure.
+Note: These should only be run once, to set up the initial infrastructure.
 
 Please ensure that you run these, in numerical order, within MySQL:
 1. Create Database HandyMax;
@@ -26,7 +26,7 @@ Please ensure that you run these, in numerical order, within MySQL:
     5.2. Insert into Services(s_name, s_description, s_image_path) values ('Electrical', 'Safe electrical work', './Images/electrical.jfif');
     5.3. Insert into Services(s_name, s_description, s_image_path) values ('Carpentry', 'Expert carpentry', './Images/carpentry.jfif');
 
-6. Query to check if appointments are working:
+6. Query to check if appointments are working -> not necessary for initial setup:
     select s.s_name as Service, a.a_name as Customer, a.a_phone as Phone, a.a_date as "Date" from Appointments as a
 	left join Services as s on s.s_link = a.s_link
 	where a.a_complete = false
